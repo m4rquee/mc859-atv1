@@ -1,6 +1,24 @@
 #include <gurobi_c++.h>
 #include <iostream>
 
+void print_solution(const short F, const short J, const short L, const short P, GRBVar X[3][3][3], GRBVar Y[3][3][3]) {
+    std::cout << "Solution:" << std::endl;
+    for (int f = 0; f < F; f++) {
+        std::cout << std::endl
+                  << "-Factory " << f << ":" << std::endl;
+        for (int p = 0; p < P; p++) {
+            std::cout << "  -Product " << p << ":" << std::endl;
+            for (int l = 0; l < L; l++)
+                std::cout << "      make " << X[p][l][f].get(GRB_DoubleAttr_X)
+                          << " tons in the machine " << l << std::endl;
+
+            for (int j = 0; j < J; j++)
+                std::cout << "      send " << Y[p][f][j].get(GRB_DoubleAttr_X)
+                          << " tons to the client " << j << std::endl;
+        }
+    }
+}
+
 int main() {
     const short F = 3, J = 3, L = 3, M = 3, P = 3;
     const double D[J][P] = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}};
@@ -88,22 +106,7 @@ int main() {
         if (model.get(GRB_IntAttr_SolCount) == 0)// if the solver could not obtain a solution
             throw "Could not obtain a solution!";
 
-
-        std::cout << "Solution:" << std::endl;
-        for (int f = 0; f < F; f++) {
-            std::cout << std::endl
-                      << "-Factory " << f << ":" << std::endl;
-            for (int p = 0; p < P; p++) {
-                std::cout << "  -Product " << p << ":" << std::endl;
-                for (int l = 0; l < L; l++)
-                    std::cout << "      make " << X[p][l][f].get(GRB_DoubleAttr_X)
-                              << " tons in the machine " << l << std::endl;
-
-                for (int j = 0; j < J; j++)
-                    std::cout << "      send " << Y[p][f][j].get(GRB_DoubleAttr_X)
-                              << " tons to the client " << j << std::endl;
-            }
-        }
+        print_solution(F, J, L, P, X, Y);
     } catch (...) {
         printf("Exception...\n");
         exit(1);
