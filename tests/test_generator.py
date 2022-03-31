@@ -14,14 +14,10 @@ C_lf = [randint(80, 100) for _ in range(F) for _ in range(L)]
 p_plf = [randint(10, 100) for _ in range(F) for _ in range(L) for _ in range(P)]
 t_pfj = [randint(10, 20) for _ in range(J) for _ in range(F) for _ in range(P)]
 
-print(J)
-print(F)
-print(L)
-print(M)
-print(P)
-print(','.join(map(str, D_jp)))
-print(','.join(map(str, r_mpl)))
-print(','.join(map(str, R_mf)))
-print(','.join(map(str, C_lf)))
-print(','.join(map(str, p_plf)))
-print(','.join(map(str, t_pfj)))
+print(J, F, L, M, P)
+print(' '.join(map(str, D_jp)))
+print(' '.join(map(str, r_mpl)))
+print(' '.join(map(str, R_mf)))
+print(' '.join(map(str, C_lf)))
+print(' '.join(map(str, p_plf)))
+print(' '.join(map(str, t_pfj)))
