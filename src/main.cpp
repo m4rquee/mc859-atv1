@@ -4,7 +4,7 @@
 #include <iterator>
 
 #define LIN2D(i, j, W) (i * W + j)
-#define LIN3D(i, j, k, W, H) (i * W + j + k * W * H)
+#define LIN3D(i, j, k, W, H) (k * W * H + j * W + i)
 
 short J, F, L, M, P;
 std::vector<int> D, r, R, C, p_cost, t_cost;
@@ -39,8 +39,8 @@ void read_data() {
 
 int main() {
     read_data();
-    auto *X = new GRBVar[P * L * F];
-    auto *Y = new GRBVar[P * F * J];
+    auto X = new GRBVar[P * L * F];
+    auto Y = new GRBVar[P * F * J];
 
     try {
         GRBEnv env = GRBEnv();
@@ -52,7 +52,7 @@ int main() {
         for (int p = 0; p < P; p++)
             for (int l = 0; l < L; l++)
                 for (int f = 0; f < F; f++) {
-                    std::string name = "X_" + std::to_string(p) + std::to_string(l) + std::to_string(f);
+                    auto name = "X_" + std::to_string(p) + std::to_string(l) + std::to_string(f);
                     X[LIN3D(p, l, f, P, L)] = model.addVar(0.0, GRB_INFINITY, p_cost[LIN3D(p, l, f, P, L)], GRB_CONTINUOUS, name);
                 }
 
@@ -60,7 +60,7 @@ int main() {
         for (int p = 0; p < P; p++)
             for (int f = 0; f < F; f++)
                 for (int j = 0; j < J; j++) {
-                    std::string name = "Y_" + std::to_string(p) + std::to_string(f) + std::to_string(j);
+                    auto name = "Y_" + std::to_string(p) + std::to_string(f) + std::to_string(j);
                     Y[LIN3D(p, f, j, P, F)] = model.addVar(0.0, GRB_INFINITY, t_cost[LIN3D(p, f, j, P, F)], GRB_CONTINUOUS, name);
                 }
 
