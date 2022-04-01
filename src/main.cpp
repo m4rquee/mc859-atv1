@@ -43,10 +43,12 @@ int main() {
     auto Y = new GRBVar[P * F * J];
 
     try {
+        int c_count = 0;
         GRBEnv env = GRBEnv();
         GRBModel model = GRBModel(env);
         model.set(GRB_StringAttr_ModelName, "Atividade 1");
         model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
+        if (J > 500) model.set(GRB_IntParam_Threads, 1);
 
         // Quantity, in tons, of the product p to be made in the machine l of the factory f:
         for (int p = 0; p < P; p++)
@@ -73,6 +75,7 @@ int main() {
                 for (int f = 0; f < F; f++)
                     expr += Y[LIN3D(p, f, j, P, F)];
                 model.addConstr(expr == D[LIN2D(j, p, P)]);
+                c_count++;
             }
 
         // Use restriction of the raw material m by all L machines of the f factory:
@@ -83,6 +86,7 @@ int main() {
                     for (int l = 0; l < L; l++)
                         expr += X[LIN3D(p, l, f, P, L)] * r[LIN3D(m, p, l, M, P)];
                 model.addConstr(expr <= R[LIN2D(m, f, F)]);
+                c_count++;
             }
 
         // Capacity restriction of each machine l of each f factory:
@@ -92,6 +96,7 @@ int main() {
                 for (int p = 0; p < P; p++)
                     expr += X[LIN3D(p, l, f, P, L)];
                 model.addConstr(expr <= C[LIN2D(l, f, F)]);
+                c_count++;
             }
 
         // Product production equals its transportation on each factory:
@@ -103,9 +108,10 @@ int main() {
                 for (int j = 0; j < J; j++)// total transported to all clients
                     exprB += Y[LIN3D(p, f, j, P, F)];
                 model.addConstr(exprA == exprB);
+                c_count++;
             }
 
-
+        std::cout << "Model has " << P * L * F + P * F * J << " variables and " << c_count << " constraints;\n";
         model.optimize();
         if (model.get(GRB_IntAttr_SolCount) == 0)// if the solver could not obtain a solution
             throw GRBException("Could not obtain a solution!", -1);
